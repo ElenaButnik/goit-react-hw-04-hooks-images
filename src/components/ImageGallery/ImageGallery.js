@@ -4,32 +4,30 @@ import ImageGalleryItem from "../ImageGalleryItem/ImageGalleryItem";
 import ImageAPI from "../services/pixabay";
 import Modal from "../Modal/Modal";
 import Button from "../Button/Button";
+import Searchbar from "../Searchbar/Searchbar";
+import Title from "../Title/SolidTitle";
 import s from "./ImageGallery.module.css";
 import PropTypes from "prop-types";
 
-export default function ImageGallery({ pageScroll, imageName }) {
+export default function ImageGallery({ pageScroll }) {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(12);
   const [imageArray, setImageArray] = useState([]);
- // const [error, setError] = useState(null);
+  const [error, setError] = useState(null);
   const [status, setStatus] = useState("idle");
   const [showModal, setShowModal] = useState(false);
   const [largeImg, setLargeImg] = useState("");
-  // const activeBtn = imageArray.length > 0 && imageArray.length / page === 12;
+  const [imageName, setimageName] = useState("");
 
   useEffect(() => {
-    // const { page, perPage } = this.state;
-    // const { imageName } = this.props;
-
-    if (!imageName.trim()) return;
-    //setImageArray([]);
-    setPage(1);
-    setStatus("pending");
+    if (!imageName) {
+      return;
+    }
 
     ImageAPI.fetchImage(imageName, page, perPage)
       .then((data) => {
         if (data.hits.length > 0) {
-          setImageArray(data.hits);
+          setImageArray((prev) => [...prev, ...data.hits]);
           setStatus("resolved");
           pageScroll();
         } else {
@@ -42,42 +40,31 @@ export default function ImageGallery({ pageScroll, imageName }) {
   }, [imageName, page, perPage, pageScroll]);
 
   const handleClickBtn = () => {
-    
+    setPage((page) => page + 1);
     setStatus("pending");
-    ImageAPI.fetchImage(imageName, page, perPage)
-      .then(({ hits }) => {
-        setImageArray([...imageArray, ...hits]);
-        setStatus("resolved");
-        pageScroll();
-
-        //newPage();
-      })
-      .catch((error) => {
-        setStatus("rejected");
-      });
   };
 
-  // const newPage = () => {
-  //   setPage((page) => page + 1);
-  // };
+  const handleFormSubmit = (imageName) => {
+    setimageName(imageName);
+    setImageArray([]);
+    setPage(1);
+  };
 
   const toggleModal = () => setShowModal(!showModal);
 
-  const onImageClick = (imageId) => {
-    //  e.preventDefault();
-    //   let src = e.target.src;
-
-    const img = imageArray.find(({ id }) => id === imageId);
-    setLargeImg(img.largeImageURL);
-    //setLargeImg(imageArray.find((el) => el.webformatURL === src));
+  const onImageClick = (e) => {
+    e.preventDefault();
+    let src = e.target.src;
+    setLargeImg(imageArray.find((el) => el.webformatURL === src));
     toggleModal();
   };
 
+  const activeBtn = imageArray.length > 0 && imageArray.length / page === 12;
+
   return (
     <div>
-      {status === "idle" && (
-        <div className={s.Query}>Please enter your query!</div>
-      )}
+      <Searchbar handleFormSubmit={handleFormSubmit} />
+      {status === "idle" && <Title titleText="Please enter your query!" />}
       {status === "pending" && (
         <Loader
           className={s.Loader}
@@ -88,15 +75,14 @@ export default function ImageGallery({ pageScroll, imageName }) {
         />
       )}
       {status === "rejected" && (
-        <h1 className={s.Query}>Something was wrong please try again!</h1>
+        <h1>
+          <Title titleText="Something was wrong please try again!" />
+        </h1>
       )}
       <ul className={s.ImageGallery}>
         <ImageGalleryItem imageArray={imageArray} onImageClick={onImageClick} />
       </ul>
-      {
-        //activeBtn &&
-        <Button handleClickBtn={handleClickBtn} />
-      }
+      {activeBtn && <Button handleClickBtn={handleClickBtn} />}
       {showModal && (
         <Modal toggleModal={toggleModal} largeImg={largeImg}></Modal>
       )}
@@ -105,7 +91,7 @@ export default function ImageGallery({ pageScroll, imageName }) {
 }
 
 ImageGallery.propTypes = {
-  imageName: PropTypes.string,
+  imageName: PropTypes.object,
   pageScroll: PropTypes.func,
 };
 

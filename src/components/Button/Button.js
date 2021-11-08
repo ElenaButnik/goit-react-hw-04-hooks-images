@@ -1,5 +1,5 @@
 import s from "./Button.module.css";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 export default function Button({ handleClickBtn }) {
   return (
@@ -9,6 +9,6 @@ export default function Button({ handleClickBtn }) {
   );
 }
 
-Button.propTypes={
+Button.propTypes = {
   handleClickBtn: PropTypes.func,
-}
+};

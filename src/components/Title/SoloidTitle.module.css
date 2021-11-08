@@ -1,0 +1,45 @@
+
+  :root {
+    --card-height: 50vh;
+    --card-width: calc(var(--card-height) / 1.5);
+    --blue: #12bcb0;
+    --green: #b4ff06b7;
+    --yellow: #fabe0e;
+  }
+  .gradientColor {
+    color: bla;
+    font-variation-settings: 'wght' 700;
+    background: linear-gradient(135deg, var(--blue) 20%, var(--yellow) 70%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+   
+  }
+  .title3 {
+    display: inline-block;
+    font-family: 'Quicksand', sans-serif;
+    font-size: calc(100vw / 40);
+    text-transform: uppercase;
+    margin: 4rem auto; 
+    padding: 0.3em 0.6em;
+   
+  
+    filter: url(#distortionFilter);
+    composes: gradientColor;
+    /* color: rgb(232, 232, 232); */
+  }
+  .title3::selection {
+    background: #161616;
+    color: #f0f0f0;
+  }
+  .distort {
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -9px;
+    pointer-events: none;
+   
+  }
+
+  .container{
+    text-align: center;
+  }
